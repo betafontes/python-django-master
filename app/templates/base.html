@@ -62,8 +62,8 @@
       background-color: #666;
     }
 
-  nav ul li.active a:hover {
-    background-color: #999;
+    nav ul li.active a:hover {
+      background-color: #999;
     }
   </style>
 </head>
@@ -72,8 +72,21 @@
   <header>
     <nav>
       <ul>
-        <li><a href="{% url 'cars_list' %}">Carros</a></li>
-        <li><a href="{% url 'new_car' %}">Cadastre seu Carro</a></li>
+        {% if user.is_authenticated %}
+          <li>Olá, {{ user.username }}</li>
+
+          <li style="margin-left: auto;"><a href="{% url 'cars_list' %}">Seus Carros</a></li> 
+          <li><a href="{% url 'new_car' %}">Registrar Carro</a></li>
+        {% endif %} 
+
+        {% if not user.is_authenticated %} 
+          <li><a href="{% url 'login' %}">Entrar</a></li>  
+          <li><a href="{% url 'register' %}">Cadastre-se</a></li>  
+        {% endif %}
+
+        {% if user.is_authenticated %} 
+          <li style="margin-left: 32rem;"><a href="{% url 'logout' %}">Sair</a></li>  
+        {% endif %}
       </ul>
     </nav>
   </header>
