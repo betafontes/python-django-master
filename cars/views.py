@@ -3,16 +3,19 @@ from cars.models import Car
 from cars.forms import CarModelForm
 from django.views import View
 from django.db.models import Q
+from django.views.generic import ListView
 
-class CarsView(View):
-    def get(self, request):
-        cars = Car.objects.all().order_by('model')
-        search = request.GET.get('search')
 
+class CarListView(ListView):
+    model = Car
+    template_name = 'cars.html'
+    context_object_name = 'cars'
+
+    def get_queryset(self):
+        queryset = super().get_queryset().order_by('model')
+        search = self.request.GET.get('search')
         if search:
             query = Q(model__icontains=search) | Q(brand__name__icontains=search) | Q(plate__icontains=search)
-
-            # tentar converter para int/float para aplicar nos campos numéricos
             if search.isdigit():
                 query |= Q(factory_year=search) | Q(model_year=search)
             try:
@@ -20,9 +23,8 @@ class CarsView(View):
                 query |= Q(value=value)
             except ValueError:
                 pass
-            cars = cars.filter(query)
-
-        return render(request, 'cars.html', {'cars': cars})
+            queryset = queryset.filter(query)
+        return queryset
 
 
 class NewCarView(View):
