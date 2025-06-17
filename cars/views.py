@@ -1,7 +1,7 @@
 from cars.models import Car
 from cars.forms import CarModelForm
 from django.db.models import Q
-from django.views.generic import ListView, CreateView, DetailView
+from django.views.generic import ListView, CreateView, DetailView, UpdateView
 
 
 class CarListView(ListView):
@@ -37,6 +37,7 @@ class NewCarCreateView(CreateView):
     def form_invalid(self, form):
         return self.render_to_response({'new_car_form': form})    
 
+
 class CarDetailView(DetailView):
     model = Car
     template_name = 'car_detail.html'
@@ -46,3 +47,16 @@ class CarDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context['car'] = self.object
         return context    
+
+
+class CarUpdateView(UpdateView):
+    model = Car
+    form_class = CarModelForm
+    template_name = 'car_update.html'
+    success_url = '/cars/'
+
+    def form_valid(self, form):
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        return self.render_to_response({'car_update_form': form})
