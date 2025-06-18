@@ -1,4 +1,6 @@
 from django.urls import reverse_lazy
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from cars.models import Car
 from cars.forms import CarModelForm
 from django.db.models import Q
@@ -26,6 +28,18 @@ class CarListView(ListView):
         return queryset
 
 
+class CarDetailView(DetailView):
+    model = Car
+    template_name = 'car_detail.html'
+    context_object_name = 'car'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['car'] = self.object
+        return context    
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class NewCarCreateView(CreateView):
     model = Car
     form_class = CarModelForm
@@ -39,17 +53,7 @@ class NewCarCreateView(CreateView):
         return self.render_to_response({'new_car_form': form})    
 
 
-class CarDetailView(DetailView):
-    model = Car
-    template_name = 'car_detail.html'
-    context_object_name = 'car'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['car'] = self.object
-        return context    
-
-
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class CarUpdateView(UpdateView):
     model = Car
     form_class = CarModelForm
@@ -65,6 +69,7 @@ class CarUpdateView(UpdateView):
         return self.render_to_response({'car_update_form': form})
 
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class CarDeleteView(DeleteView):
     model = Car
     template_name = 'car_delete.html'
