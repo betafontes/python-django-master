@@ -98,7 +98,7 @@
   {% if user.is_authenticated %}
     <div class="buttons-container">
       <a href="{% url 'car_update' pk=object.pk %}" class="btn btn-primary">Editar</a>
-      {% comment %} <a href="{% url 'car_delete' pk=object.pk %}" class="btn btn-danger">Deletar</a> {% endcomment %}
+      <a href="{% url 'car_delete' pk=object.pk %}" class="btn btn-danger">Deletar</a>
     </div> 
   {% endif %}
 {% endblock %}

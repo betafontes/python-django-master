@@ -1,7 +1,8 @@
+from django.urls import reverse_lazy
 from cars.models import Car
 from cars.forms import CarModelForm
 from django.db.models import Q
-from django.views.generic import ListView, CreateView, DetailView, UpdateView
+from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
 
 
 class CarListView(ListView):
@@ -53,10 +54,28 @@ class CarUpdateView(UpdateView):
     model = Car
     form_class = CarModelForm
     template_name = 'car_update.html'
-    success_url = '/cars/'
+
+    def get_success_url(self):
+        return reverse_lazy('car_detail', kwargs={'pk': self.object.pk})
 
     def form_valid(self, form):
         return super().form_valid(form)
 
     def form_invalid(self, form):
         return self.render_to_response({'car_update_form': form})
+
+
+class CarDeleteView(DeleteView):
+    model = Car
+    template_name = 'car_delete.html'
+    success_url = '/cars/'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['car'] = self.object
+        return context
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.delete()
+        return super().delete(request, *args, **kwargs)
